@@ -1,0 +1,15 @@
+*.pyc
+__pycache__/
+data.db
+prueba_*.pdf
+.env
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
