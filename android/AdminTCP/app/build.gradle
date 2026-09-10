@@ -17,30 +17,24 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") {
-            // Use debug keystore for CI builds
-        }
-        create("release") {
-            // Falls back to debug keystore if no release key configured
-            val ksFile = rootProject.file("release.keystore")
+        release {
+            def ksFile = rootProject.file("release.keystore")
             if (ksFile.exists()) {
                 storeFile = ksFile
                 storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
                 keyAlias = System.getenv("KEY_ALIAS") ?: ""
                 keyPassword = System.getenv("KEY_PASSWORD") ?: ""
             } else {
-                // Use debug signing config as fallback
-                val debugConfig = getByName("debug")
-                storeFile = debugConfig.storeFile
-                storePassword = debugConfig.storePassword
-                keyAlias = debugConfig.keyAlias
-                keyPassword = debugConfig.keyPassword
+                storeFile = signingConfigs.debug.storeFile
+                storePassword = signingConfigs.debug.storePassword
+                keyAlias = signingConfigs.debug.keyAlias
+                keyPassword = signingConfigs.debug.keyPassword
             }
         }
     }
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.release
             minifyEnabled false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
