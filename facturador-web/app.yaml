@@ -1,6 +1,6 @@
 kind: wasmer.io/App.v0
 name: factura-tcp
-package: mayrelsuarezgomez/factura-tcp@1.0.3
+package: .
 cli_args:
   - -m
   - flask
