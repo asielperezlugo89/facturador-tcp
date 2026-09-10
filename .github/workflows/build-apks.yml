@@ -35,7 +35,7 @@ jobs:
         run: chmod +x android/ClienteTCP/gradlew
 
       - name: Generate debug keystore
-        run: keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+        run: mkdir -p ~/.android && keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Build ClienteTCP Release APK
         working-directory: android/ClienteTCP
@@ -77,7 +77,7 @@ jobs:
         run: chmod +x android/AdminTCP/gradlew
 
       - name: Generate debug keystore
-        run: keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+        run: mkdir -p ~/.android && keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Build AdminTCP Release APK
         working-directory: android/AdminTCP
