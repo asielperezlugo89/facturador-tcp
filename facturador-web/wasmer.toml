@@ -1,6 +1,6 @@
 [package]
 name = "mayrelsuarezgomez/factura-tcp"
-version = "1.0.4"
+version = "1.0.5"
 description = "Sistema de facturación para TCP Cuba"
 repository = "https://github.com/asielperezlugo89/facturador-tcp"
 readme = "README.md"
@@ -10,6 +10,7 @@ readme = "README.md"
 
 [fs]
 "/app" = "."
+"/cpython/lib/python3.12/site-packages" = "./.venv-min/Lib/site-packages"
 
 [[command]]
 name = "factura-tcp"
