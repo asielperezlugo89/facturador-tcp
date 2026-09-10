@@ -10,7 +10,6 @@ readme = "README.md"
 
 [fs]
 "/app" = "."
-"/cpython/lib/python3.12/site-packages" = "./.venv/Lib/site-packages"
 
 [[command]]
 name = "factura-tcp"
