@@ -16,25 +16,9 @@ android {
         buildConfigField("String", "SERVER_URL", "\"" + (project.findProperty("SERVER_URL") ?: "https://sbx-3uf5cknv5lseqtow.arena.site") + "\"")
     }
 
-    signingConfigs {
-        release {
-            def ksFile = rootProject.file("release.keystore")
-            if (ksFile.exists()) {
-                storeFile = ksFile
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-                keyAlias = System.getenv("KEY_ALIAS") ?: ""
-                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
-            } else {
-                storeFile = signingConfigs.debug.storeFile
-                storePassword = signingConfigs.debug.storePassword
-                keyAlias = signingConfigs.debug.keyAlias
-                keyPassword = signingConfigs.debug.keyPassword
-            }
-        }
-    }
     buildTypes {
         release {
-            signingConfig = signingConfigs.release
+            signingConfig = signingConfigs.debug
             minifyEnabled false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
