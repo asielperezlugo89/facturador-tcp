@@ -2,7 +2,7 @@ kind: wasmer.io/App.v0
 name: factura-tcp
 package: .
 cli_args:
-  - main.py
+  - /app/main.py
 env:
   PYTHONEXECUTABLE: /bin/python
   PYTHONUNBUFFERED: "1"
