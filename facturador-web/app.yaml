@@ -1,0 +1,16 @@
+kind: wasmer.io/App.v0
+name: factura-tcp
+package: .
+cli_args:
+  - -m
+  - gunicorn
+  - --bind
+  - 0.0.0.0:8080
+  - --workers
+  - "2"
+  - app:app
+env:
+  PYTHONEXECUTABLE: /bin/python
+  PYTHONUNBUFFERED: "1"
+owner: mayrelsuarezgomez
+app_id: da_KE4I8tXUZJq0
