@@ -10,6 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 // ---------- modelos ----------
+interface ApiResponse { val ok: Boolean; val error: String? }
 data class RespLogin(val ok: Boolean, val token: String? = null, val error: String? = null)
 
 data class Resumen(
@@ -30,7 +31,7 @@ data class TcpInfo(
 )
 data class RespTcp(val ok: Boolean, val tcp: List<TcpInfo> = emptyList(), val error: String? = null)
 data class RespTcpOne(val ok: Boolean, val tcp: TcpInfo? = null, val error: String? = null)
-data class RespId(val ok: Boolean, val tcp_id: Int? = null, val cliente_id: Int? = null, val error: String? = null)
+data class RespId(val ok: Boolean, val tcp_id: Int? = null, val cliente_id: Int? = null, val error: String? = null) : ApiResponse
 
 data class ItemDoc(val descripcion: String, val um: String = "U", val cantidad: Double, val precio: Double)
 data class Solicitud(
@@ -77,7 +78,7 @@ data class RespConfig(
     val ok: Boolean, val config: Map<String, String> = emptyMap(), val error: String? = null
 )
 
-data class RespOk(val ok: Boolean, val mensaje: String? = null, val error: String? = null)
+data class RespOk(val ok: Boolean, val mensaje: String? = null, val error: String? = null) : ApiResponse
 
 // ---------- servicio Retrofit ----------
 interface AdminApiService {
