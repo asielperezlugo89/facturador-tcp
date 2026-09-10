@@ -18,12 +18,6 @@ runner = "wasi"
 
 [command.annotations.wasi]
 main-args = [
-    "-m",
-    "gunicorn",
-    "--bind",
-    "0.0.0.0:8080",
-    "--workers",
-    "2",
-    "app:app",
+    "main.py",
 ]
 env = ["PYTHONEXECUTABLE: /bin/python", "PYTHONUNBUFFERED: 1"]
