@@ -13,3 +13,4 @@ prueba_*.pdf
 .externalNativeBuild
 .cxx
 local.properties
+**/apk-output/
