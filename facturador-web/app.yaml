@@ -1,8 +1,15 @@
 kind: wasmer.io/App.v0
 name: factura-tcp
-package: .
+package: mayrelsuarezgomez/factura-tcp@1.0.3
 cli_args:
-  - /app/main.py
+  - -m
+  - flask
+  - --app
+  - /app/main
+  - run
+  - --host=0.0.0.0
+  - --port=8080
+  - --no-reload
 env:
   PYTHONEXECUTABLE: /bin/python
   PYTHONUNBUFFERED: "1"

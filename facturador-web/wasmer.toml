@@ -1,23 +1,30 @@
 [package]
 name = "mayrelsuarezgomez/factura-tcp"
-version = "1.0.1"
+version = "1.0.3"
 description = "Sistema de facturación para TCP Cuba"
 repository = "https://github.com/asielperezlugo89/facturador-tcp"
 readme = "README.md"
 
 [dependencies]
-"python/python" = "^0.2.0"
+"wasmer/python" = "^3.12.6"
 
 [fs]
 "/app" = "."
 
 [[command]]
 name = "factura-tcp"
-module = "python/python:python"
+module = "wasmer/python:python"
 runner = "wasi"
 
 [command.annotations.wasi]
 main-args = [
-    "/app/main.py",
+    "-m",
+    "flask",
+    "--app",
+    "/app/main",
+    "run",
+    "--host=0.0.0.0",
+    "--port=8080",
+    "--no-reload",
 ]
-env = ["PYTHONEXECUTABLE: /bin/python", "PYTHONUNBUFFERED: 1"]
+env = ["PYTHONEXECUTABLE=/bin/python", "PYTHONUNBUFFERED=1"]
