@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.TCPAdmin" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#1565C0</item>
-        <item name="colorPrimaryVariant">#0D47A1</item>
+        <item name="colorPrimary">#0d9488</item>
+        <item name="colorPrimaryVariant">#0f766e</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#FF6F00</item>
-        <item name="android:statusBarColor">#0D47A1</item>
+        <item name="colorSecondary">#0f766e</item>
+        <item name="android:statusBarColor">#0f766e</item>
+        <item name="android:windowBackground">#f1f5f9</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 </resources>

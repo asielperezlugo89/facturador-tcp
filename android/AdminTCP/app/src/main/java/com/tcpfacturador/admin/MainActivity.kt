@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         // Barra de resumen
         val tvResumen = TextView(this).apply {
             setPadding(16, 12, 16, 12)
-            setBackgroundColor(0xFF1565C0.toInt())
+            setBackgroundColor(0xFF0d9488.toInt())
             setTextColor(0xFFFFFFFF.toInt())
             textSize = 13f
         }
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         // Bottom navigation
         bottomNav = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(0xFF212121.toInt())
+            setBackgroundColor(0xFF0f172a.toInt())
             setPadding(0, 4, 0, 4)
         }
         root.addView(bottomNav)
@@ -211,6 +211,7 @@ class MainActivity : AppCompatActivity() {
                                 add("+ Extra" to { activarTcp(t.id, "extra", layout) })
                                 add("✏️ Editar" to { showTcpForm(t, layout) })
                                 if (t.estado == "activo" || t.estado == "gracia") add("Suspender" to { suspenderTcp(t.id, layout) })
+                                add("Eliminar" to { eliminarTcp(t.id, layout) })
                             }
                         ))
                     }
@@ -254,6 +255,25 @@ class MainActivity : AppCompatActivity() {
                         val resp = Api.svc().tcpSuspender(token, id)
                         Toast.makeText(this@MainActivity, resp.mensaje ?: "Suspendido", Toast.LENGTH_SHORT).show()
                         loadTcp()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun eliminarTcp(id: Int, layout: LinearLayout) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar TCP")
+            .setMessage("Se eliminará el TCP junto con todos sus documentos y clientes. ¿Continuar?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                lifecycleScope.launch {
+                    try {
+                        val resp = Api.svc().tcpDelete(token, id)
+                        Toast.makeText(this@MainActivity, if (resp.ok) "Eliminado" else (resp.error ?: "Error"), Toast.LENGTH_SHORT).show()
+                        if (resp.ok) loadTcp()
                     } catch (e: Exception) {
                         Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -449,6 +469,7 @@ class MainActivity : AppCompatActivity() {
                                 if (d.pdf) add("📄 PDF" to { downloadPdf(d.id, d.numero) })
                                 if (d.estado == "solicitado") add("⚡ Generar" to { generarDoc(d.id, layout) })
                                 if (d.estado != "anulado") add("Anular" to { anularDoc(d.id, layout) })
+                                add("Eliminar" to { eliminarDoc(d.id, layout) })
                             }
                         ))
                     }
@@ -480,6 +501,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun eliminarDoc(id: Int, layout: LinearLayout) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar documento")
+            .setMessage("¿Eliminar este documento permanentemente?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                lifecycleScope.launch {
+                    try {
+                        val resp = Api.svc().docsDelete(token, id)
+                        Toast.makeText(this@MainActivity, if (resp.ok) "Eliminado" else (resp.error ?: "Error"), Toast.LENGTH_SHORT).show()
+                        if (resp.ok) loadDocs()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
     // ==================== MÁS ====================
     private fun loadMas() {
         val scroll = ScrollView(this)
@@ -507,7 +547,8 @@ class MainActivity : AppCompatActivity() {
         // Logout
         val btnLogout = Button(this).apply {
             text = "Cerrar sesión"
-            setTextColor(0xFFF44336.toInt())
+            setTextColor(0xFFEF4444.toInt())
+            setBackgroundColor(0xFFFEE2E2.toInt())
         }
         layout.addView(btnLogout)
 
@@ -568,7 +609,7 @@ class MainActivity : AppCompatActivity() {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(24, 20, 24, 20)
-            setBackgroundColor(0xFF2A2A2A.toInt())
+            setBackgroundColor(0xFFFFFFFF.toInt())
             val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             params.setMargins(0, 0, 0, 16)
             layoutParams = params
@@ -577,7 +618,7 @@ class MainActivity : AppCompatActivity() {
         val tvTitle = TextView(this).apply {
             text = title
             textSize = 15f
-            setTextColor(0xFFFFFFFF.toInt())
+            setTextColor(0xFF0f172a.toInt())
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
         card.addView(tvTitle)
@@ -586,7 +627,7 @@ class MainActivity : AppCompatActivity() {
             val tvSub = TextView(this).apply {
                 text = subtitle
                 textSize = 12f
-                setTextColor(0xFFBDBDBD.toInt())
+                setTextColor(0xFF64748b.toInt())
                 setPadding(0, 8, 0, if (actions.isNotEmpty()) 12 else 0)
             }
             card.addView(tvSub)
@@ -595,11 +636,12 @@ class MainActivity : AppCompatActivity() {
         if (actions.isNotEmpty()) {
             val btnRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
             for ((label, action) in actions) {
+                val isDelete = label.contains("Eliminar")
                 val btn = Button(this).apply {
                     text = label
                     textSize = 11f
-                    setBackgroundColor(0xFF424242.toInt())
-                    setTextColor(0xFFFFFFFF.toInt())
+                    setBackgroundColor(if (isDelete) 0xFFFEE2E2.toInt() else 0xFFE0F2F1.toInt())
+            setTextColor(if (isDelete) 0xFF991B1B.toInt() else 0xFF0d9488.toInt())
                     val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                     params.setMargins(0, 0, 8, 0)
                     layoutParams = params

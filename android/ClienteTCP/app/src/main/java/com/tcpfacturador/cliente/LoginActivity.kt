@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val deviceId = Sesion.deviceId(this@LoginActivity)
-                val body = mapOf("telefono" to phone, "device_id" to deviceId)
+                val body = mapOf("telefono" to phone, "nombre_apellidos" to phone, "device_id" to deviceId)
                 val resp = Api.svc().registro(body)
                 withContext(Dispatchers.Main) {
                     if (resp.ok && resp.token != null) {

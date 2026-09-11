@@ -461,7 +461,7 @@ def tcp_list():
         fin = fmt_fecha(t["plan_fin"]) if t.get("plan_fin") else "-"
         tr += f"""<tr><td><b>{esc(t['codigo'])}</b></td><td>{esc(t['nombre_apellidos'])}<br><small>{esc(t['telefono'])} {esc(t['ci'])}</small></td>
         <td><span class='pill p-{esc(t['estado'])}'>{esc(t['estado'])}</span></td><td><b>{t['docs_disponibles']}</b></td><td>{fin}</td>
-        <td><a class="btn sm" href="/tcp/{t['id']}">Abrir</a></td></tr>"""
+        <td><a class="btn sm" href="/tcp/{t['id']}">Abrir</a> <a class="btn sm red" href="/tcp/{t['id']}/eliminar" onclick="return confirm('¿Eliminar TCP {esc(t['codigo'])} y todo su contenido?')">Eliminar</a></td></tr>"""
     c = f"""<div class="box"><a class="btn" href="/tcp/nuevo">+ Nuevo TCP</a>
     <table style="margin-top:12px"><tr><th>Código</th><th>Nombre</th><th>Estado</th><th>Docs</th><th>Vence</th><th></th></tr>{tr or '<tr><td colspan=6>Ninguno</td></tr>'}</table></div>"""
     return page("TCP Clientes", c, "tcp", _flash())
@@ -596,6 +596,19 @@ def tcp_suspender(tcp_id):
     _set_flash("warn", "Cuenta suspendida.")
     return redirect(url_for("tcp_ver", tcp_id=tcp_id))
 
+@app.route("/tcp/<int:tcp_id>/eliminar")
+@admin_required
+def tcp_eliminar(tcp_id):
+    t = get_tcp(tcp_id)
+    if not t:
+        return redirect(url_for("tcp_list"))
+    db.execute("DELETE FROM documentos WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM clientes_finales WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM notificaciones WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM tcp_clientes WHERE id=?", (tcp_id,))
+    _set_flash("ok", f"TCP {t['codigo']} eliminado junto con sus documentos y clientes.")
+    return redirect(url_for("tcp_list"))
+
 # ---------- web: clientes finales ----------
 @app.route("/clientes")
 @admin_required
@@ -683,7 +696,7 @@ def doc_list():
     for d in rows:
         pdf = f"<a class='btn sm gray' href='/documentos/{d['id']}/pdf'>PDF</a>" if d["estado"] in ("generado", "enviado") else ""
         gen = f"<a class='btn sm' href='/documentos/{d['id']}/generar'>Generar y enviar</a>" if d["estado"] == "solicitado" else ""
-        tr += f"<tr><td>{d['id']}</td><td>{esc(d['tipo'])}</td><td>{esc(d['numero'] or '(s/n)')}</td><td>{esc(d['codigo'])}</td><td><span class='pill p-{esc(d['estado'])}'>{esc(d['estado'])}</span></td><td>{fmt_money(d['total'])}</td><td><a class='btn sm gray' href='/documentos/{d['id']}'>Abrir</a> {gen} {pdf}</td></tr>"
+        tr += f"<tr><td>{d['id']}</td><td>{esc(d['tipo'])}</td><td>{esc(d['numero'] or '(s/n)')}</td><td>{esc(d['codigo'])}</td><td><span class='pill p-{esc(d['estado'])}'>{esc(d['estado'])}</span></td><td>{fmt_money(d['total'])}</td><td><a class='btn sm gray' href='/documentos/{d['id']}'>Abrir</a> {gen} {pdf} <a class='btn sm red' href='/documentos/{d['id']}/eliminar' onclick=\"return confirm('¿Eliminar documento?')\">Eliminar</a></td></tr>"
     c = f"""<div class="box"><a class="btn" href="/documentos/nuevo">+ Documento manual</a>
     <a class="btn gray" href="/documentos">Todos</a> <a class="btn amber" href="/documentos?estado=solicitado">Solicitudes</a>
     <table style="margin-top:12px"><tr><th>ID</th><th>Tipo</th><th>No.</th><th>TCP</th><th>Estado</th><th>Total</th><th></th></tr>{tr or '<tr><td colspan=7>Ninguno</td></tr>'}</table></div>"""
@@ -765,6 +778,7 @@ def doc_ver(doc_id):
         btns += f"<a class='btn gray' href='/documentos/{doc_id}/pdf'>⬇ Descargar PDF</a> "
     if d["estado"] != "anulado":
         btns += f"<a class='btn red' href='/documentos/{doc_id}/anular' onclick='return confirm(\"¿Anular?\")'>Anular</a>"
+    btns += f" <a class='btn red' href='/documentos/{doc_id}/eliminar' onclick='return confirm(\"¿Eliminar este documento permanentemente?\")'>Eliminar</a>"
     c = f"""<div class="box"><p><b>ID {d['id']}</b> · {esc(d['tipo']).upper()} No. <b>{esc(d['numero'] or '(s/n)')}</b> · <span class='pill p-{esc(d['estado'])}'>{esc(d['estado'])}</span></p>
     <p>TCP: {esc(d['codigo'])} {esc(d['nombre_apellidos'])} · Cliente: {cli_txt} · Contrato: {esc(d['contrato_no'])} · Fecha: {esc(d['fecha'] or ('__/__/____' if d['fecha_blanco'] else '-'))}</p>
     <p style="margin:10px 0">{btns} <a class="btn gray" href="/documentos">Volver</a></p>
@@ -778,6 +792,16 @@ def doc_generar(doc_id):
     ok, msg = generar_y_enviar(doc_id, session.get("admin", "web"))
     _set_flash("ok" if ok else "err", msg)
     return redirect(url_for("doc_ver", doc_id=doc_id))
+
+@app.route("/documentos/<int:doc_id>/eliminar")
+@admin_required
+def doc_eliminar(doc_id):
+    d = db.fetchone("SELECT * FROM documentos WHERE id=?", (doc_id,))
+    if not d:
+        return redirect(url_for("doc_list"))
+    db.execute("DELETE FROM documentos WHERE id=?", (doc_id,))
+    _set_flash("ok", f"Documento {doc_id} eliminado.")
+    return redirect(url_for("doc_list"))
 
 @app.route("/documentos/<int:doc_id>/pdf")
 @admin_required
@@ -900,10 +924,10 @@ def api_auth():
 @app.route("/api/registro", methods=["POST"])
 def api_registro():
     d = request.get_json(silent=True) or request.form.to_dict()
-    nombre = (d.get("nombre_apellidos") or "").strip()
+    nombre = (d.get("nombre_apellidos") or d.get("telefono") or "").strip()
     device = (d.get("device_id") or "").strip()
     if not nombre:
-        return jsonify({"ok": False, "error": "Falta nombre_apellidos"}), 400
+        return jsonify({"ok": False, "error": "Falta nombre o telefono"}), 400
     if not device:
         return jsonify({"ok": False, "error": "Falta device_id (ID único del teléfono)"}), 400
     if db.fetchone("SELECT id FROM tcp_clientes WHERE device_id=?", (device,)):
@@ -1282,6 +1306,29 @@ def api_admin_tcp_img(tcp_id):
                 return jsonify({"ok": False, "error": f"{campo} inválido"}), 400
             db.execute(f"UPDATE tcp_clientes SET {blobc}=?, {nomc}=? WHERE id=?", (raw, d.get(campo + "_nombre", "apk.png"), tcp_id))
     return jsonify({"ok": True, "mensaje": "Imágenes guardadas."})
+
+@app.route("/api/admin/tcp/<int:tcp_id>", methods=["DELETE"])
+def api_admin_tcp_del(tcp_id):
+    r = _req_admin()
+    if r:
+        return r
+    if not get_tcp(tcp_id):
+        return jsonify({"ok": False, "error": "No existe"}), 404
+    db.execute("DELETE FROM documentos WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM clientes_finales WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM notificaciones WHERE tcp_id=?", (tcp_id,))
+    db.execute("DELETE FROM tcp_clientes WHERE id=?", (tcp_id,))
+    return jsonify({"ok": True})
+
+@app.route("/api/admin/documentos/<int:did>", methods=["DELETE"])
+def api_admin_doc_del(did):
+    r = _req_admin()
+    if r:
+        return r
+    if not db.fetchone("SELECT id FROM documentos WHERE id=?", (did,)):
+        return jsonify({"ok": False, "error": "No existe"}), 404
+    db.execute("DELETE FROM documentos WHERE id=?", (did,))
+    return jsonify({"ok": True})
 
 @app.route("/api/admin/clientes", methods=["GET"])
 def api_admin_cli():

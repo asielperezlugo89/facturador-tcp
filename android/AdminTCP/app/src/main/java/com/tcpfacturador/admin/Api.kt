@@ -106,6 +106,9 @@ interface AdminApiService {
     @POST("api/admin/tcp/{id}/suspender")
     suspend fun tcpSuspender(@Header("X-Admin-Token") token: String, @Path("id") id: Int): RespOk
 
+    @retrofit2.http.DELETE("api/admin/tcp/{id}")
+    suspend fun tcpDelete(@Header("X-Admin-Token") token: String, @Path("id") id: Int): RespOk
+
     @POST("api/admin/tcp/{id}/imagen")
     suspend fun tcpImagen(@Header("X-Admin-Token") token: String, @Path("id") id: Int, @Body d: Map<String, String?>): RespOk
 
@@ -123,6 +126,9 @@ interface AdminApiService {
 
     @POST("api/admin/documentos/{id}/anular")
     suspend fun docsAnular(@Header("X-Admin-Token") token: String, @Path("id") id: Int): RespOk
+
+    @retrofit2.http.DELETE("api/admin/documentos/{id}")
+    suspend fun docsDelete(@Header("X-Admin-Token") token: String, @Path("id") id: Int): RespOk
 
     @GET("api/admin/documentos/{id}/pdf")
     @Streaming
