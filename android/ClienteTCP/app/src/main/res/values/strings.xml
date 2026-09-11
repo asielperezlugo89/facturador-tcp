@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TCP Cliente</string>
+    <string name="login_title">Facturador TCP</string>
+    <string name="login_subtitle">Sistema de Facturación para TCP</string>
+    <string name="login_phone_hint">Número de teléfono</string>
+    <string name="login_btn">Conectar</string>
+    <string name="login_btn_register">Registrar Dispositivo</string>
+    <string name="login_error_empty">Ingrese su número de teléfono</string>
+    <string name="login_error_server">Error al conectar con el servidor</string>
+    <string name="login_error_device">Dispositivo no registrado. Solicite acceso al administrador.</string>
+    <string name="login_success">Sesión iniciada correctamente</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_solicitar">Solicitar</string>
+    <string name="nav_documentos">Docs</string>
+    <string name="nav_avisos">Avisos</string>
+    <string name="status_title">Estado de Suscripción</string>
+    <string name="status_active">Activo</string>
+    <string name="status_inactive">Inactivo</string>
+    <string name="status_pending">Pendiente</string>
+    <string name="status_suspended">Suspendido</string>
+    <string name="docs_title">Mis Documentos</string>
+    <string name="solicitar_title">Solicitar Documento</string>
+    <string name="avisos_title">Notificaciones</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+    <string name="btn_download_pdf">Descargar PDF</string>
+    <string name="btn_new_doc">Nuevo Documento</string>
+    <string name="empty_docs">No hay documentos registrados</string>
+    <string name="empty_avisos">No hay notificaciones</string>
+    <string name="confirm_logout">¿Desea cerrar sesión?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_generic">Ocurrió un error. Intente de nuevo.</string>
+    <string name="conectando">Conectando al servidor…</string>
+</resources>

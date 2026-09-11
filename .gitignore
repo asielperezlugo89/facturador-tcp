@@ -9,6 +9,7 @@ prueba_*.pdf
 /.idea
 .DS_Store
 /build
+**/build/
 /captures
 .externalNativeBuild
 .cxx
